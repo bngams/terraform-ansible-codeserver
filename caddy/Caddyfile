@@ -1,13 +1,18 @@
 # Caddyfile — reverse proxy + TLS WILDCARD via Cloudflare DNS-01.
 # {$DOMAIN} et {$CLOUDFLARE_API_TOKEN} viennent de l'environnement (cf. .env).
 #
+# /!\ Sous-domaines à UN SEUL niveau (lab1.{$DOMAIN}, …) — couverts par le
+#     certificat Universal SSL gratuit de Cloudflare (*.{$DOMAIN}).
+#     Un schéma à deux niveaux (1.lab.{$DOMAIN}) n'est PAS couvert par l'Universal
+#     SSL gratuit → handshake failure côté edge. D'où lab1, lab2, …
+#
 # Topologie : Cloudflare (proxy : DDoS/WAF, cache l'IP, TLS edge)  →  ce Caddy
 # (route par sous-domaine vers les conteneurs). Le challenge DNS-01 obtient un
-# certificat *.{$DOMAIN} qui fonctionne MÊME quand Cloudflare proxifie (orange).
+# certificat *.{$DOMAIN} côté origine qui fonctionne derrière le proxy.
 #
 # Prérequis Cloudflare :
 #   - DNS proxifié (orange) :  {$DOMAIN} A <IP_VPS>  et  *.{$DOMAIN} A <IP_VPS>
-#   - SSL/TLS mode : Full (strict)
+#   - SSL/TLS mode : Full (strict)  (au moins pour les hôtes lab*)
 #   - API token (scope Zone:DNS:Edit sur la zone) → CLOUDFLARE_API_TOKEN dans .env
 
 # Snippet réutilisable : config TLS Cloudflare (cert wildcard via DNS-01).
@@ -17,48 +22,42 @@
 	}
 }
 
-# Un site par sous-domaine → son conteneur (port 8080 interne).
-1.{$DOMAIN} {
+# Un site par stagiaire → son conteneur (port 8080 interne).
+lab1.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-1:8080
 }
-2.{$DOMAIN} {
+lab2.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-2:8080
 }
-3.{$DOMAIN} {
+lab3.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-3:8080
 }
-4.{$DOMAIN} {
+lab4.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-4:8080
 }
-5.{$DOMAIN} {
+lab5.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-5:8080
 }
-6.{$DOMAIN} {
+lab6.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-6:8080
 }
-7.{$DOMAIN} {
+lab7.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-7:8080
 }
-8.{$DOMAIN} {
+lab8.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-8:8080
 }
 
 # Console LocalStack partagée
-ls.{$DOMAIN} {
+labls.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy localstack:4566
-}
-
-# Domaine racine (sans sous-domaine) : page d'entrée.
-{$DOMAIN} {
-	import cf_tls
-	respond "Lab GitOps — acces stagiaires : 1.{$DOMAIN} ... 8.{$DOMAIN}"
 }

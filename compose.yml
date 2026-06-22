@@ -8,8 +8,8 @@
 #   cp .env.example .env   # définir DOMAIN, EMAIL, mots de passe
 #   docker compose up -d
 #
-# Accès : 1.lab.example.com … 8.lab.example.com  (VS Code par stagiaire)
-#         ls.lab.example.com  (console LocalStack)
+# Accès : lab1.example.com … lab8.example.com  (VS Code par stagiaire)
+#         labls.example.com  (console LocalStack)
 # =============================================================================
 
 x-student-box: &student-box
@@ -42,7 +42,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - DOMAIN=${DOMAIN:?DOMAIN manquant dans .env}              # ex: lab.example.com
+      - DOMAIN=${DOMAIN:?DOMAIN manquant dans .env}              # ex: example.com (la ZONE)
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN manquant dans .env}
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro

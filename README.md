@@ -16,13 +16,13 @@ un **LocalStack partagé** jouant le rôle de « cloud » commun.
                     │
            ┌────────▼─────────┐
            │   Cloudflare     │  proxy : DDoS / WAF / cache l'IP du VPS / TLS edge
-           └────────┬─────────┘  DNS proxifié : lab.example.com + *.lab.example.com
+           └────────┬─────────┘  DNS proxifié : *.example.com  (1 niveau → cert gratuit)
                     │  (Full strict)
               ┌─────▼──────┐
               │   Caddy    │  routage par sous-domaine + cert WILDCARD (DNS-01 Cloudflare)
               └──┬───┬───┬─┘
-   1.lab… ───────┘   │   └────── ls.lab…  (console LocalStack partagée)
-        …8.lab…      │
+   lab1… ────────┘   │   └────── labls…  (console LocalStack partagée)
+        …lab8…       │
         ┌────────────┴─────────────┐  (× 8)
         │  student-N               │
         │   • code-server (VS Code web)   ~300 Mo
@@ -38,7 +38,7 @@ un **LocalStack partagé** jouant le rôle de « cloud » commun.
 ```
 
 > **Cloudflare ET Caddy — pas l'un OU l'autre.** Cloudflare protège (DDoS/WAF, cache l'IP) mais
-> **ne sait pas** router `1.lab…` → `student-1` *dans* le VPS. Ce fan-out, c'est le job de
+> **ne sait pas** router `lab1…` → `student-1` *dans* le VPS. Ce fan-out, c'est le job de
 > **Caddy**. Cloudflare se place **devant** Caddy.
 
 **Budget RAM (16 Go) :** 8 × (code-server ~300 Mo + box/dind ~700 Mo) ≈ 8 Go + LocalStack
@@ -64,17 +64,24 @@ ne tiendrait pas — d'où le choix code-server, sans bureau lourd.)*
 
 ### 1. Cloudflare (DNS + protection)
 
-Sur la zone du domaine (`lab.example.com`), créer deux enregistrements **proxifiés (orange)** :
+Sur la zone du domaine (`DOMAIN`, ex: `example.com`), un enregistrement **proxifié (orange)** :
 
 ```
-lab.example.com      A   <IP_VPS>   (Proxied)   # entrée
-*.lab.example.com    A   <IP_VPS>   (Proxied)   # 1.lab…, 2.lab…, ls.lab…
+*.example.com    A   <IP_VPS>   (Proxied)   # couvre lab1.example.com … lab8 … labls
 ```
 
-- **SSL/TLS** : mode **Full (strict)**.
+> **⚠️ Sous-domaines à UN seul niveau (`lab1.example.com`), pas `1.lab.example.com`.**
+> Le certificat **Universal SSL gratuit** de Cloudflare couvre `example.com` et `*.example.com`
+> (un niveau) — mais **pas** `*.lab.example.com` (deux niveaux) → l'edge renverrait un
+> *handshake failure*. D'où le schéma `labN`. *(Le 2-niveaux exigerait Total TLS / Advanced
+> Certificate, payant.)*
+
+- **SSL/TLS** : mode **Full (strict)**. Si la zone héberge **d'autres sites** en *Flexible*, ne
+  changez pas le mode global : ajoutez une **Configuration Rule** (Hostname *contains*
+  `DOMAIN` côté `lab`) qui force **Full (strict)** uniquement pour les hôtes du lab.
 - **API token** : *My Profile > API Tokens > Create* → scope **Zone : DNS : Edit** sur la zone.
   → à mettre dans `.env` (`CLOUDFLARE_API_TOKEN`). Sert au challenge **DNS-01** de Caddy
-  (certificat wildcard, fonctionne derrière le proxy).
+  (certificat origine wildcard, fonctionne derrière le proxy).
 
 ### 2. Configuration
 
@@ -95,8 +102,8 @@ docker compose up -d        # build des postes + démarrage (1er run un peu long
 docker compose ps
 ```
 
-Accès stagiaires : `https://1.lab.example.com` … `https://8.lab.example.com`
-(mot de passe = `S<N>_PASSWORD`). Console LocalStack : `https://ls.lab.example.com`.
+Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
+(mot de passe = `S<N>_PASSWORD`). Console LocalStack : `https://labls.example.com`.
 
 ---
 
@@ -115,8 +122,9 @@ Accès stagiaires : `https://1.lab.example.com` … `https://8.lab.example.com`
 Le setup par défaut suppose **Cloudflare** (proxy + DNS-01 wildcard). Si vous n'utilisez pas
 Cloudflare :
 
-- pointez simplement `lab.example.com` et `*.lab.example.com` vers l'IP du VPS (DNS « grey »,
-  non proxifié) ;
+- pointez simplement `*.example.com` (ou `lab1.example.com` … `lab8`, `labls`) vers l'IP du VPS
+  en DNS « grey » (non proxifié) — le 2-niveaux n'est plus un souci puisqu'on ne dépend plus du
+  cert edge Cloudflare ;
 - côté Caddy, repassez sur le challenge **HTTP-01** (un certificat par hôte, **aucun token**) :
   retirez les blocs `tls { dns cloudflare … }` du `Caddyfile` et l'image stock `caddy:2` suffit
   (plus besoin du `Dockerfile` Cloudflare).
