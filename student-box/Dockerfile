@@ -9,6 +9,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Locale UTF-8 (sinon Ansible : "could not initialize the preferred locale").
 # C.UTF-8 est fourni par la glibc, pas besoin de générer une locale.
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+# Creds AWS BIDON pour la CLI contre LocalStack (sinon `aws` : NoCredentials).
+# LocalStack ne vérifie rien ; ça évite l'erreur sans config ~/.aws.
+ENV AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=eu-west-3
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       curl ca-certificates gnupg lsb-release git unzip sudo locales \
