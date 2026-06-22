@@ -55,18 +55,18 @@ services:
     networks: [lab]
 
   # --------- LocalStack PARTAGÉ (le cloud commun) ---------------------------
-  # /!\ image COMMUNITY (tag `stable`) — gratuite, AUCUN token requis.
-  #     Le tag `latest` tire désormais une build qui démarre en mode Pro et
-  #     exige un LOCALSTACK_AUTH_TOKEN (exit 55). On épingle donc `stable`.
+  # /!\ Depuis le 23/03/2026, les images LocalStack RÉCENTES (latest/stable) exigent
+  #     un LOCALSTACK_AUTH_TOKEN, même pour le tier gratuit (exit code 55 sinon).
+  #     On ÉPINGLE donc une version ANTÉRIEURE (3.8) qui tourne sans token, gratuite.
+  #     (Alternative : créer un token Hobby gratuit sur app.localstack.cloud et le
+  #      mettre dans .env → LOCALSTACK_AUTH_TOKEN, avec l'image récente.)
   localstack:
-    image: localstack/localstack:stable
+    image: localstack/localstack:3.8
     container_name: localstack    # nom fixe → résolu par les postes via http://localstack:4566
     restart: unless-stopped
     environment:
-      - SERVICES=s3            # community ; S3 suffit pour le lab (site statique J2-5)
+      - SERVICES=s3            # S3 suffit pour le lab (site statique J2-5)
       - DEBUG=0
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock   # LocalStack côté hôte (service partagé)
     networks: [lab]
     # Accessible par les postes via http://localstack:4566 (réseau interne)
 
