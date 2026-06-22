@@ -125,6 +125,59 @@ Vous perdez alors la protection DDoS/WAF et le masquage d'IP.
 
 ---
 
+## Pare-feu : n'accepter 80/443 que depuis Cloudflare (UFW)
+
+Avec Cloudflare en proxy, on **cache l'IP** du VPS — mais si quelqu'un la découvre, il pourrait
+joindre le VPS **en direct** et contourner la protection. On verrouille donc le pare-feu pour
+n'accepter `80/443` **que depuis les plages d'IP Cloudflare**.
+
+> ⚠️ Gardez **SSH (22) ouvert** vers votre IP avant de toucher au reste, pour ne pas vous
+> enfermer dehors.
+
+### Ajouter les règles
+
+```bash
+# 1) SSH d'abord (adapter à votre IP, ou laisser ouvert si besoin)
+sudo ufw allow 22/tcp
+
+# 2) Autoriser 80/443 UNIQUEMENT depuis les plages Cloudflare (IPv4 + IPv6)
+for ip in $(curl -fsSL https://www.cloudflare.com/ips-v4) \
+          $(curl -fsSL https://www.cloudflare.com/ips-v6); do
+  sudo ufw allow from "$ip" to any port 80  proto tcp comment 'cloudflare'
+  sudo ufw allow from "$ip" to any port 443 proto tcp comment 'cloudflare'
+done
+
+# 3) Bloquer 80/443 pour tout le reste (accès direct par IP impossible)
+sudo ufw deny 80/tcp
+sudo ufw deny 443/tcp
+
+# 4) Activer
+sudo ufw enable
+sudo ufw status numbered
+```
+
+### Retirer les règles (rollback)
+
+```bash
+# Supprimer toutes les règles taguées 'cloudflare'
+sudo ufw status numbered | awk -F'[][]' '/cloudflare/ {print $2}' | sort -rn \
+  | while read n; do sudo ufw --force delete "$n"; done
+
+# Retirer les blocages 80/443
+sudo ufw delete deny 80/tcp
+sudo ufw delete deny 443/tcp
+
+# (option) réautoriser 80/443 à tout le monde, ou désactiver le pare-feu
+# sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
+# sudo ufw disable
+```
+
+> **Maintenance.** Les plages Cloudflare changent rarement mais peuvent évoluer : re-jouer le
+> bloc « Ajouter » remet les règles à jour (les anciennes 'cloudflare' peuvent être purgées avec
+> le rollback d'abord).
+
+---
+
 ## Plan B — Guacamole (si le réseau NTT bloque)
 
 Si le réseau client ne peut joindre que du RDP/VNC, on peut basculer sur **Apache Guacamole**
