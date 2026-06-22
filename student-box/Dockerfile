@@ -2,13 +2,16 @@
 # Léger (pas de GUI lourde) → 8 instances tiennent sur 16 Go.
 FROM debian:12-slim
 
-ARG TERRAFORM_VERSION=1.14.3
+ARG TERRAFORM_VERSION=1.15.6
 ARG CODE_SERVER_VERSION=4.96.4
 
 ENV DEBIAN_FRONTEND=noninteractive
+# Locale UTF-8 (sinon Ansible : "could not initialize the preferred locale").
+# C.UTF-8 est fourni par la glibc, pas besoin de générer une locale.
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      curl ca-certificates gnupg lsb-release git unzip sudo \
+      curl ca-certificates gnupg lsb-release git unzip sudo locales \
       ansible python3 python3-pip openssh-client jq nano vim \
   && rm -rf /var/lib/apt/lists/*
 
