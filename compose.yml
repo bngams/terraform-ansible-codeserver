@@ -55,11 +55,14 @@ services:
     networks: [lab]
 
   # --------- LocalStack PARTAGÉ (le cloud commun) ---------------------------
+  # /!\ image COMMUNITY (tag `stable`) — gratuite, AUCUN token requis.
+  #     Le tag `latest` tire désormais une build qui démarre en mode Pro et
+  #     exige un LOCALSTACK_AUTH_TOKEN (exit 55). On épingle donc `stable`.
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:stable
     restart: unless-stopped
     environment:
-      - SERVICES=s3,ec2,iam,sts
+      - SERVICES=s3            # community ; S3 suffit pour le lab (site statique J2-5)
       - DEBUG=0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock   # LocalStack côté hôte (service partagé)
