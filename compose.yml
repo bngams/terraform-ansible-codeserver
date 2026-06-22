@@ -8,8 +8,8 @@
 #   cp .env.example .env   # définir DOMAIN, EMAIL, mots de passe
 #   docker compose up -d
 #
-# Accès : 1.lab.bytelayers.com … 8.lab.bytelayers.com  (VS Code par stagiaire)
-#         ls.lab.bytelayers.com  (console LocalStack)
+# Accès : 1.lab.example.com … 8.lab.example.com  (VS Code par stagiaire)
+#         ls.lab.example.com  (console LocalStack)
 # =============================================================================
 
 x-student-box: &student-box
@@ -30,15 +30,20 @@ x-dind: &dind
 
 services:
 
-  # --------- Reverse proxy (TLS automatique Let's Encrypt) -------------------
+  # --------- Reverse proxy (TLS wildcard via Cloudflare DNS-01) --------------
+  # Image Caddy + plugin DNS Cloudflare (l'image stock caddy:2 ne l'inclut pas).
+  # → certificat WILDCARD *.DOMAIN, qui fonctionne DERRIÈRE le proxy Cloudflare
+  #   (le challenge HTTP-01 entrerait en conflit avec le proxy ; DNS-01 non).
   caddy:
-    image: caddy:2
+    build: ./caddy            # Dockerfile = caddy + module cloudflare (xcaddy)
+    image: caddy-cf:local
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     environment:
-      - DOMAIN=${DOMAIN:?DOMAIN manquant dans .env}   # ex: lab.bytelayers.com
+      - DOMAIN=${DOMAIN:?DOMAIN manquant dans .env}              # ex: lab.example.com
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN manquant dans .env}
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data        # certificats (persistant)
