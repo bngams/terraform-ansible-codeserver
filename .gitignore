@@ -1,2 +1,3 @@
 # Secrets / runtime — ne pas committer
 .env
+.DS_Store
