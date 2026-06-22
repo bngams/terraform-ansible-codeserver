@@ -1,0 +1,142 @@
+# =============================================================================
+# infra-formateur — environnement hébergé pour la formation (VPS 4 vCore / 16 Go)
+# =============================================================================
+# 8 postes stagiaires (code-server = VS Code navigateur) + DinD isolé chacun
+# + 1 LocalStack PARTAGÉ (le "cloud" commun) + Caddy (reverse proxy, TLS auto).
+# GitLab : on utilise gitlab.com (Mode Cloud) — pas de gitlab-ce ici.
+#
+#   cp .env.example .env   # définir DOMAIN, EMAIL, mots de passe
+#   docker compose up -d
+#
+# Accès : 1.lab.bytelayers.com … 8.lab.bytelayers.com  (VS Code par stagiaire)
+#         ls.lab.bytelayers.com  (console LocalStack)
+# =============================================================================
+
+x-student-box: &student-box
+  build: ./student-box
+  image: gitops-student:local
+  restart: unless-stopped
+  # mem_limit / cpus : garde-fous pour que 8 postes cohabitent
+  mem_limit: 1g
+  networks: [lab]
+
+x-dind: &dind
+  image: docker:27-dind
+  restart: unless-stopped
+  privileged: true            # requis par DinD — ISOLÉ par stagiaire (pas le socket hôte)
+  command: ["--tls=false"]
+  mem_limit: 1g
+  networks: [lab]
+
+services:
+
+  # --------- Reverse proxy (TLS automatique Let's Encrypt) -------------------
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN:?DOMAIN manquant dans .env}   # ex: lab.bytelayers.com
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # certificats (persistant)
+      - caddy_config:/config
+    networks: [lab]
+
+  # --------- LocalStack PARTAGÉ (le cloud commun) ---------------------------
+  localstack:
+    image: localstack/localstack:latest
+    restart: unless-stopped
+    environment:
+      - SERVICES=s3,ec2,iam,sts
+      - DEBUG=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # LocalStack côté hôte (service partagé)
+    networks: [lab]
+    # Accessible par les postes via http://localstack:4566 (réseau interne)
+
+  # =========================== POSTES STAGIAIRES =============================
+  # Chaque poste = 1 code-server + 1 DinD dédié. DOCKER_HOST pointe vers le DinD.
+  # (8 blocs explicites : Docker Compose ne « boucle » pas — anchors pour rester DRY.)
+
+  student-1:
+    <<: *student-box
+    container_name: student-1
+    environment:
+      - PASSWORD=${S1_PASSWORD:?S1_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-1:2375
+    depends_on: [dind-1]
+  dind-1: { <<: *dind, container_name: dind-1 }
+
+  student-2:
+    <<: *student-box
+    container_name: student-2
+    environment:
+      - PASSWORD=${S2_PASSWORD:?S2_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-2:2375
+    depends_on: [dind-2]
+  dind-2: { <<: *dind, container_name: dind-2 }
+
+  student-3:
+    <<: *student-box
+    container_name: student-3
+    environment:
+      - PASSWORD=${S3_PASSWORD:?S3_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-3:2375
+    depends_on: [dind-3]
+  dind-3: { <<: *dind, container_name: dind-3 }
+
+  student-4:
+    <<: *student-box
+    container_name: student-4
+    environment:
+      - PASSWORD=${S4_PASSWORD:?S4_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-4:2375
+    depends_on: [dind-4]
+  dind-4: { <<: *dind, container_name: dind-4 }
+
+  student-5:
+    <<: *student-box
+    container_name: student-5
+    environment:
+      - PASSWORD=${S5_PASSWORD:?S5_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-5:2375
+    depends_on: [dind-5]
+  dind-5: { <<: *dind, container_name: dind-5 }
+
+  student-6:
+    <<: *student-box
+    container_name: student-6
+    environment:
+      - PASSWORD=${S6_PASSWORD:?S6_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-6:2375
+    depends_on: [dind-6]
+  dind-6: { <<: *dind, container_name: dind-6 }
+
+  student-7:
+    <<: *student-box
+    container_name: student-7
+    environment:
+      - PASSWORD=${S7_PASSWORD:?S7_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-7:2375
+    depends_on: [dind-7]
+  dind-7: { <<: *dind, container_name: dind-7 }
+
+  student-8:
+    <<: *student-box
+    container_name: student-8
+    environment:
+      - PASSWORD=${S8_PASSWORD:?S8_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-8:2375
+    depends_on: [dind-8]
+  dind-8: { <<: *dind, container_name: dind-8 }
+
+networks:
+  lab:
+    name: lab
+
+volumes:
+  caddy_data:
+  caddy_config:

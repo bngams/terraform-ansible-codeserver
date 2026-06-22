@@ -1,0 +1,32 @@
+# Caddyfile — reverse proxy + TLS automatique (Let's Encrypt, HTTP-01).
+# {$DOMAIN} vient de l'environnement (ex: lab.bytelayers.com).
+# Prérequis DNS :  {$DOMAIN} A <IP_VPS>   et   *.{$DOMAIN} A <IP_VPS>
+# Prérequis : ports 80 et 443 ouverts sur le VPS.
+
+# Page d'entrée
+{$DOMAIN} {
+	respond "Lab GitOps — accès stagiaires : 1.{$DOMAIN} … 8.{$DOMAIN}"
+}
+
+# Un poste stagiaire par sous-domaine → son code-server (port 8080 interne).
+# Caddy obtient un certificat Let's Encrypt pour chaque hôte automatiquement.
+1.{$DOMAIN} { reverse_proxy student-1:8080 }
+2.{$DOMAIN} { reverse_proxy student-2:8080 }
+3.{$DOMAIN} { reverse_proxy student-3:8080 }
+4.{$DOMAIN} { reverse_proxy student-4:8080 }
+5.{$DOMAIN} { reverse_proxy student-5:8080 }
+6.{$DOMAIN} { reverse_proxy student-6:8080 }
+7.{$DOMAIN} { reverse_proxy student-7:8080 }
+8.{$DOMAIN} { reverse_proxy student-8:8080 }
+
+# Console LocalStack partagée (le "cloud" commun)
+ls.{$DOMAIN} { reverse_proxy localstack:4566 }
+
+# --- Variante certificat WILDCARD unique (au lieu d'un cert par hôte) -------
+# Nécessite un challenge DNS-01 = un token API chez votre fournisseur DNS,
+# et le plugin Caddy correspondant. Exemple (Cloudflare) :
+#   *.{$DOMAIN} {
+#     tls { dns cloudflare {$CLOUDFLARE_API_TOKEN} }
+#     reverse_proxy {labels.0}... # routage par sous-domaine
+#   }
+# Par défaut on reste sur HTTP-01 (1 cert par hôte) : aucun token requis.
