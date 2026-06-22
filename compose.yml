@@ -72,6 +72,7 @@ services:
     environment:
       - PASSWORD=${S1_PASSWORD:?S1_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-1:2375
+    volumes: [home-1:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-1]
   dind-1: { <<: *dind, container_name: dind-1 }
 
@@ -81,6 +82,7 @@ services:
     environment:
       - PASSWORD=${S2_PASSWORD:?S2_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-2:2375
+    volumes: [home-2:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-2]
   dind-2: { <<: *dind, container_name: dind-2 }
 
@@ -90,6 +92,7 @@ services:
     environment:
       - PASSWORD=${S3_PASSWORD:?S3_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-3:2375
+    volumes: [home-3:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-3]
   dind-3: { <<: *dind, container_name: dind-3 }
 
@@ -99,6 +102,7 @@ services:
     environment:
       - PASSWORD=${S4_PASSWORD:?S4_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-4:2375
+    volumes: [home-4:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-4]
   dind-4: { <<: *dind, container_name: dind-4 }
 
@@ -108,6 +112,7 @@ services:
     environment:
       - PASSWORD=${S5_PASSWORD:?S5_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-5:2375
+    volumes: [home-5:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-5]
   dind-5: { <<: *dind, container_name: dind-5 }
 
@@ -117,6 +122,7 @@ services:
     environment:
       - PASSWORD=${S6_PASSWORD:?S6_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-6:2375
+    volumes: [home-6:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-6]
   dind-6: { <<: *dind, container_name: dind-6 }
 
@@ -126,6 +132,7 @@ services:
     environment:
       - PASSWORD=${S7_PASSWORD:?S7_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-7:2375
+    volumes: [home-7:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-7]
   dind-7: { <<: *dind, container_name: dind-7 }
 
@@ -135,6 +142,7 @@ services:
     environment:
       - PASSWORD=${S8_PASSWORD:?S8_PASSWORD manquant}
       - DOCKER_HOST=tcp://dind-8:2375
+    volumes: [home-8:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-8]
   dind-8: { <<: *dind, container_name: dind-8 }
 
@@ -145,3 +153,11 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  home-1:
+  home-2:
+  home-3:
+  home-4:
+  home-5:
+  home-6:
+  home-7:
+  home-8:
