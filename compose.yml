@@ -60,6 +60,7 @@ services:
   #     exige un LOCALSTACK_AUTH_TOKEN (exit 55). On épingle donc `stable`.
   localstack:
     image: localstack/localstack:stable
+    container_name: localstack    # nom fixe → résolu par les postes via http://localstack:4566
     restart: unless-stopped
     environment:
       - SERVICES=s3            # community ; S3 suffit pour le lab (site statique J2-5)
