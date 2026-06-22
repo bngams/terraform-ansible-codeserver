@@ -24,7 +24,11 @@ x-dind: &dind
   image: docker:27-dind
   restart: unless-stopped
   privileged: true            # requis par DinD — ISOLÉ par stagiaire (pas le socket hôte)
-  command: ["--tls=false"]
+  # DOCKER_TLS_CERTDIR="" → désactive le TLS et écoute en CLAIR sur 2375.
+  # (docker:27-dind active TLS sur 2376 par défaut ; `--tls=false` seul ne suffit pas.)
+  environment:
+    DOCKER_TLS_CERTDIR: ""
+  command: ["--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock"]
   mem_limit: 1g
   networks: [lab]
 
