@@ -21,7 +21,11 @@ x-student-box: &student-box
   networks: [lab]
 
 x-dind: &dind
-  image: docker:27-dind
+  # Image du sidecar DinD, choisie par .env (DIND_IMAGE) :
+  #   - défaut (non défini)       → docker:27-dind   (lab GitOps standard)
+  #   - DIND_IMAGE=dind-runc:local → DinD + runc/crane (lab Docker bas niveau, cf. 2512-docker-runc/)
+  #     Construire l'image une fois :  docker build -t dind-runc:local ./dind -f ./dind/Dockerfile.runc
+  image: ${DIND_IMAGE:-docker:27-dind}
   restart: unless-stopped
   privileged: true            # requis par DinD — ISOLÉ par stagiaire (pas le socket hôte)
   # DOCKER_TLS_CERTDIR="" → désactive le TLS et écoute en CLAIR sur 2375.
