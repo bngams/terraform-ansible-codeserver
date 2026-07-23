@@ -4,7 +4,7 @@ Setup **côté formateur** : un VPS qui fournit à **8 stagiaires** un poste de 
 l'emploi (VS Code dans le navigateur) pour les TP **Terraform (J2)** et **Ansible (J3)**, plus
 un **LocalStack partagé** jouant le rôle de « cloud » commun.
 
-> ⚠️ Ce dossier n'est **pas** un TP stagiaire — c'est votre provisioning. Les secrets (`.env`)
+> ⚠️ Ce dossier n'est **pas** un TP  — c'est le provisioning pour fournir une infra configurée pour Ansible / Terraform. Les secrets (`.env`)
 > sont **gitignorés**.
 
 ---
@@ -186,7 +186,7 @@ sudo ufw delete deny 443/tcp
 
 ---
 
-## Plan B — Guacamole (si le réseau NTT bloque)
+## Plan B — Guacamole (si le réseau client bloque)
 
 Si le réseau client ne peut joindre que du RDP/VNC, on peut basculer sur **Apache Guacamole**
 (passerelle clientless dans le navigateur) devant des postes — base :
