@@ -18,11 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ansible python3 python3-pip openssh-client jq nano vim \
   && rm -rf /var/lib/apt/lists/*
 
-# --- Docker CLI (le démon est fourni par le sidecar DinD, via DOCKER_HOST) ---
+# --- Docker CLI + plugins compose / buildx (le démon est fourni par le sidecar DinD, via DOCKER_HOST) ---
 RUN install -m 0755 -d /etc/apt/keyrings \
   && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
-  && apt-get update && apt-get install -y --no-install-recommends docker-ce-cli \
+  && apt-get update && apt-get install -y --no-install-recommends docker-ce-cli docker-compose-plugin docker-buildx-plugin \
   && rm -rf /var/lib/apt/lists/*
 
 # --- Terraform ---

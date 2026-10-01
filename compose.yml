@@ -39,6 +39,9 @@ x-dind: &dind
   command: ["--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock"]
   mem_limit: 1g
   networks: [lab]
+  # volumes: [home-N:/home/student] (par dind, ci-dessous) : le démon résout les bind
+  # mounts (`-v ./nginx.conf:…`) DANS le DinD → on y monte le home du poste au MÊME
+  # chemin, sinon Docker crée un dossier vide à la place du fichier.
 
 services:
 
@@ -95,7 +98,7 @@ services:
     network_mode: "service:dind-1"  # partage le réseau du DinD (localhost commun)
     volumes: [home-1:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-1]
-  dind-1: { <<: *dind, container_name: dind-1 }
+  dind-1: { <<: *dind, container_name: dind-1, volumes: [home-1:/home/student] }
 
   student-2:
     <<: *student-box
@@ -107,7 +110,7 @@ services:
     network_mode: "service:dind-2"  # partage le réseau du DinD (localhost commun)
     volumes: [home-2:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-2]
-  dind-2: { <<: *dind, container_name: dind-2 }
+  dind-2: { <<: *dind, container_name: dind-2, volumes: [home-2:/home/student] }
 
   student-3:
     <<: *student-box
@@ -119,7 +122,7 @@ services:
     network_mode: "service:dind-3"  # partage le réseau du DinD (localhost commun)
     volumes: [home-3:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-3]
-  dind-3: { <<: *dind, container_name: dind-3 }
+  dind-3: { <<: *dind, container_name: dind-3, volumes: [home-3:/home/student] }
 
   student-4:
     <<: *student-box
@@ -131,7 +134,7 @@ services:
     network_mode: "service:dind-4"  # partage le réseau du DinD (localhost commun)
     volumes: [home-4:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-4]
-  dind-4: { <<: *dind, container_name: dind-4 }
+  dind-4: { <<: *dind, container_name: dind-4, volumes: [home-4:/home/student] }
 
   student-5:
     <<: *student-box
@@ -143,7 +146,7 @@ services:
     network_mode: "service:dind-5"  # partage le réseau du DinD (localhost commun)
     volumes: [home-5:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-5]
-  dind-5: { <<: *dind, container_name: dind-5 }
+  dind-5: { <<: *dind, container_name: dind-5, volumes: [home-5:/home/student] }
 
   student-6:
     <<: *student-box
@@ -155,7 +158,7 @@ services:
     network_mode: "service:dind-6"  # partage le réseau du DinD (localhost commun)
     volumes: [home-6:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-6]
-  dind-6: { <<: *dind, container_name: dind-6 }
+  dind-6: { <<: *dind, container_name: dind-6, volumes: [home-6:/home/student] }
 
   student-7:
     <<: *student-box
@@ -167,7 +170,7 @@ services:
     network_mode: "service:dind-7"  # partage le réseau du DinD (localhost commun)
     volumes: [home-7:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-7]
-  dind-7: { <<: *dind, container_name: dind-7 }
+  dind-7: { <<: *dind, container_name: dind-7, volumes: [home-7:/home/student] }
 
   student-8:
     <<: *student-box
@@ -179,7 +182,7 @@ services:
     network_mode: "service:dind-8"  # partage le réseau du DinD (localhost commun)
     volumes: [home-8:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-8]
-  dind-8: { <<: *dind, container_name: dind-8 }
+  dind-8: { <<: *dind, container_name: dind-8, volumes: [home-8:/home/student] }
 
   student-9:
     <<: *student-box
@@ -191,7 +194,7 @@ services:
     network_mode: "service:dind-9"  # partage le réseau du DinD (localhost commun)
     volumes: [home-9:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-9]
-  dind-9: { <<: *dind, container_name: dind-9 }
+  dind-9: { <<: *dind, container_name: dind-9, volumes: [home-9:/home/student] }
 
   student-10:
     <<: *student-box
@@ -203,7 +206,7 @@ services:
     network_mode: "service:dind-10"  # partage le réseau du DinD (localhost commun)
     volumes: [home-10:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-10]
-  dind-10: { <<: *dind, container_name: dind-10 }
+  dind-10: { <<: *dind, container_name: dind-10, volumes: [home-10:/home/student] }
 
 networks:
   lab:

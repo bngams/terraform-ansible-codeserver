@@ -127,6 +127,10 @@ Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
   - ⚠️ `/proxy/<port>/` **retire** le préfixe : OK pour un site statique / une API, mais une app
     qui génère des liens absolus (`/assets/…`) casse → utiliser `/absproxy/<port>/` et
     configurer le *base path* de l'app.
+  - **Bind mounts** (`-v ./nginx.conf:…`, `volumes: [./conf:…]`) : le démon les résout *dans*
+    le DinD → le home du poste y est monté **au même chemin** (`home-N:/home/student`), sinon
+    Docker crée un dossier vide à la place du fichier (« mount a directory onto a file »).
+    ⚠️ seuls les chemins sous `/home/student` fonctionnent (pas `/tmp/…`).
   - code-server écoute sur **13337** (pas 8080) pour laisser 8080 libre aux stagiaires.
 - **LocalStack** : joignable à `http://localstack:4566` (réseau interne). Provider AWS pointé
   dessus (cf. chapitre **J2-5 LocalStack** du support de formation). **Préfixer** les noms de ressources.
