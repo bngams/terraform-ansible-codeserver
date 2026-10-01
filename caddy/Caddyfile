@@ -22,47 +22,65 @@
 	}
 }
 
+# Snippet : /proxy/<port> (sans slash final) → /proxy/<port>/
+# Sans le slash, le navigateur résout les liens relatifs (css/app.css) en
+# /proxy/css/app.css → code-server cherche le « port » css → 500.
+(proxy_slash) {
+	@proxy_noslash path_regexp ^/(abs)?proxy/[0-9]+$
+	redir @proxy_noslash {path}/{?query} 308
+}
+
 # Un site par stagiaire → son code-server (port 13337).
 # Le poste partage le réseau de son DinD (network_mode) → on le joint via dind-N.
 # Conteneurs du stagiaire : https://labN.{$DOMAIN}/proxy/<port>/ (proxy code-server, protégé par mot de passe).
 lab1.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-1:13337
 }
 lab2.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-2:13337
 }
 lab3.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-3:13337
 }
 lab4.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-4:13337
 }
 lab5.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-5:13337
 }
 lab6.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-6:13337
 }
 lab7.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-7:13337
 }
 lab8.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-8:13337
 }
 lab9.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-9:13337
 }
 lab10.{$DOMAIN} {
 	import cf_tls
+	import proxy_slash
 	reverse_proxy dind-10:13337
 }
 

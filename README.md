@@ -115,7 +115,8 @@ Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
 - **Accéder à ses conteneurs** : le poste **partage le réseau** de son DinD
   (`network_mode: service:dind-N`), donc un `docker run -p 9090:80 …` est joignable :
   - dans le terminal : `curl http://localhost:9090` (comme sur un laptop) ;
-  - dans le navigateur : `https://labN.example.com/proxy/9090/` — proxy intégré à code-server,
+  - dans le navigateur : `https://labN.example.com/proxy/9090/` (**slash final requis** — Caddy
+    redirige `/proxy/9090` → `/proxy/9090/`, sinon les liens relatifs cassent) — proxy intégré à code-server,
     **protégé par le mot de passe** du poste (rien n'est exposé publiquement). Aucune extension
     à installer ; pour l'ouvrir *dans* VS Code : palette → **Simple Browser: Show**.
   - ⚠️ `/proxy/<port>/` **retire** le préfixe : OK pour un site statique / une API, mais une app
