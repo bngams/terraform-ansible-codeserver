@@ -90,6 +90,7 @@ services:
     container_name: student-1
     environment:
       - PASSWORD=${S1_PASSWORD:?S1_PASSWORD manquant}
+      - PROXY_DOMAIN=lab1-{{port}}.${DOMAIN}   # https://lab1-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-1"  # partage le réseau du DinD (localhost commun)
     volumes: [home-1:/home/student]   # persiste le travail du stagiaire
@@ -101,6 +102,7 @@ services:
     container_name: student-2
     environment:
       - PASSWORD=${S2_PASSWORD:?S2_PASSWORD manquant}
+      - PROXY_DOMAIN=lab2-{{port}}.${DOMAIN}   # https://lab2-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-2"  # partage le réseau du DinD (localhost commun)
     volumes: [home-2:/home/student]   # persiste le travail du stagiaire
@@ -112,6 +114,7 @@ services:
     container_name: student-3
     environment:
       - PASSWORD=${S3_PASSWORD:?S3_PASSWORD manquant}
+      - PROXY_DOMAIN=lab3-{{port}}.${DOMAIN}   # https://lab3-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-3"  # partage le réseau du DinD (localhost commun)
     volumes: [home-3:/home/student]   # persiste le travail du stagiaire
@@ -123,6 +126,7 @@ services:
     container_name: student-4
     environment:
       - PASSWORD=${S4_PASSWORD:?S4_PASSWORD manquant}
+      - PROXY_DOMAIN=lab4-{{port}}.${DOMAIN}   # https://lab4-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-4"  # partage le réseau du DinD (localhost commun)
     volumes: [home-4:/home/student]   # persiste le travail du stagiaire
@@ -134,6 +138,7 @@ services:
     container_name: student-5
     environment:
       - PASSWORD=${S5_PASSWORD:?S5_PASSWORD manquant}
+      - PROXY_DOMAIN=lab5-{{port}}.${DOMAIN}   # https://lab5-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-5"  # partage le réseau du DinD (localhost commun)
     volumes: [home-5:/home/student]   # persiste le travail du stagiaire
@@ -145,6 +150,7 @@ services:
     container_name: student-6
     environment:
       - PASSWORD=${S6_PASSWORD:?S6_PASSWORD manquant}
+      - PROXY_DOMAIN=lab6-{{port}}.${DOMAIN}   # https://lab6-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-6"  # partage le réseau du DinD (localhost commun)
     volumes: [home-6:/home/student]   # persiste le travail du stagiaire
@@ -156,6 +162,7 @@ services:
     container_name: student-7
     environment:
       - PASSWORD=${S7_PASSWORD:?S7_PASSWORD manquant}
+      - PROXY_DOMAIN=lab7-{{port}}.${DOMAIN}   # https://lab7-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-7"  # partage le réseau du DinD (localhost commun)
     volumes: [home-7:/home/student]   # persiste le travail du stagiaire
@@ -167,6 +174,7 @@ services:
     container_name: student-8
     environment:
       - PASSWORD=${S8_PASSWORD:?S8_PASSWORD manquant}
+      - PROXY_DOMAIN=lab8-{{port}}.${DOMAIN}   # https://lab8-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-8"  # partage le réseau du DinD (localhost commun)
     volumes: [home-8:/home/student]   # persiste le travail du stagiaire
@@ -178,6 +186,7 @@ services:
     container_name: student-9
     environment:
       - PASSWORD=${S9_PASSWORD:?S9_PASSWORD manquant}
+      - PROXY_DOMAIN=lab9-{{port}}.${DOMAIN}   # https://lab9-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-9"  # partage le réseau du DinD (localhost commun)
     volumes: [home-9:/home/student]   # persiste le travail du stagiaire
@@ -189,6 +198,7 @@ services:
     container_name: student-10
     environment:
       - PASSWORD=${S10_PASSWORD:?S10_PASSWORD manquant}
+      - PROXY_DOMAIN=lab10-{{port}}.${DOMAIN}   # https://lab10-<port>.DOMAIN (auth code-server)
       - DOCKER_HOST=tcp://localhost:2375
     network_mode: "service:dind-10"  # partage le réseau du DinD (localhost commun)
     volumes: [home-10:/home/student]   # persiste le travail du stagiaire

@@ -49,4 +49,7 @@ WORKDIR /home/student
 # souvent leurs conteneurs sur 8080 → on évite la collision de port.
 EXPOSE 13337
 # le mot de passe vient de la variable PASSWORD (cf. compose) ; bind sur toutes les interfaces
-CMD ["code-server", "--bind-addr", "0.0.0.0:13337", "--auth", "password"]
+# PROXY_DOMAIN (ex: lab3-{{port}}.example.com) → proxy code-server PAR SOUS-DOMAINE :
+# https://lab3-3000.example.com sert localhost:3000 à la RACINE (SPA, fetch('/api') OK),
+# derrière l'auth code-server. Absent → seul le proxy par chemin /proxy/<port>/ existe.
+CMD ["sh", "-c", "exec code-server --bind-addr 0.0.0.0:13337 --auth password ${PROXY_DOMAIN:+--proxy-domain \"$PROXY_DOMAIN\"}"]

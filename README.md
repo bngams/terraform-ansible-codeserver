@@ -120,9 +120,10 @@ Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
     **protégé par le mot de passe** du poste (rien n'est exposé publiquement). Aucune extension
     à installer ; pour l'ouvrir *dans* VS Code : palette → **Simple Browser: Show**.
   - **SPA / appels API absolus** (`fetch('/items')`, assets en `/static/…`) : utiliser le
-    sous-domaine direct `https://labN-<port>.example.com` (ex : `lab3-3000`) — Caddy route vers
-    `dind-N:<port>`, l'app est servie à la racine. ⚠️ **public** (pas d'auth), ports **3000-9999**
-    uniquement (jamais 2375 = API Docker, ni 13337 = code-server).
+    sous-domaine `https://labN-<port>.example.com` (ex : `lab3-3000`). C'est le proxy **natif**
+    de code-server (`--proxy-domain labN-{{port}}.DOMAIN`, variable `PROXY_DOMAIN`) : l'app est
+    servie **à la racine**, derrière le **mot de passe du poste** (1 login par sous-domaine, cookie
+    non partagé entre labs). C'est aussi le lien proposé par l'onglet **PORTS** de VS Code.
   - ⚠️ `/proxy/<port>/` **retire** le préfixe : OK pour un site statique / une API, mais une app
     qui génère des liens absolus (`/assets/…`) casse → utiliser `/absproxy/<port>/` et
     configurer le *base path* de l'app.
