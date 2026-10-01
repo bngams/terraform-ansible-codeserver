@@ -84,9 +84,26 @@ lab10.{$DOMAIN} {
 	reverse_proxy dind-10:13337
 }
 
-
 # Console LocalStack partagée
 labls.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy localstack:4566
+}
+
+# Conteneurs des stagiaires EN DIRECT : labN-PORT.{$DOMAIN} → dind-N:PORT
+# (ex: lab3-3000.{$DOMAIN}). L'app est servie à la racine « / » → les SPA et les
+# appels API absolus (fetch('/items')) marchent, contrairement à /proxy/<port>/.
+# 1 seul niveau de sous-domaine → couvert par le cert wildcard / Universal SSL.
+# /!\ PUBLIC (pas d'auth code-server). Ports limités à 3000-9999 : jamais 2375
+#     (API Docker du DinD, sans auth = root) ni 13337 (code-server).
+# Les blocs labN.{$DOMAIN} ci-dessus, plus précis, restent prioritaires.
+*.{$DOMAIN} {
+	import cf_tls
+	@labport header_regexp lp Host ^lab([0-9]+)-([3-9][0-9]{3})\.
+	handle @labport {
+		reverse_proxy dind-{re.lp.1}:{re.lp.2}
+	}
+	handle {
+		respond "Not found" 404
+	}
 }
