@@ -18,7 +18,11 @@ x-student-box: &student-box
   restart: unless-stopped
   # mem_limit / cpus : garde-fous pour que 8 postes cohabitent
   mem_limit: 1g
-  networks: [lab]
+  # PAS de `networks:` ici : chaque poste PARTAGE la pile réseau de son DinD
+  # (network_mode: service:dind-N, cf. plus bas). Ainsi un `docker run -p 9090:80`
+  # (publié DANS le DinD) est joignable en http://localhost:9090 depuis le terminal,
+  # et via le proxy code-server : https://labN.DOMAIN/proxy/9090/
+  # → code-server écoute donc sur 13337 (pas 8080, que les stagiaires publient souvent).
 
 x-dind: &dind
   # Image du sidecar DinD, choisie par .env (DIND_IMAGE) :
@@ -75,7 +79,10 @@ services:
     # Accessible par les postes via http://localstack:4566 (réseau interne)
 
   # =========================== POSTES STAGIAIRES =============================
-  # Chaque poste = 1 code-server + 1 DinD dédié. DOCKER_HOST pointe vers le DinD.
+  # Chaque poste = 1 code-server + 1 DinD dédié, dans le MÊME namespace réseau
+  # (network_mode: service:dind-N) → DOCKER_HOST=localhost, ports publiés sur localhost.
+  # Caddy joint code-server via dind-N:13337 (le poste n'a plus d'IP propre).
+  # /!\ si dind-N est recréé, `docker compose up -d` recrée aussi student-N.
   # (8 blocs explicites : Docker Compose ne « boucle » pas — anchors pour rester DRY.)
 
   student-1:
@@ -83,7 +90,8 @@ services:
     container_name: student-1
     environment:
       - PASSWORD=${S1_PASSWORD:?S1_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-1:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-1"  # partage le réseau du DinD (localhost commun)
     volumes: [home-1:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-1]
   dind-1: { <<: *dind, container_name: dind-1 }
@@ -93,7 +101,8 @@ services:
     container_name: student-2
     environment:
       - PASSWORD=${S2_PASSWORD:?S2_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-2:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-2"  # partage le réseau du DinD (localhost commun)
     volumes: [home-2:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-2]
   dind-2: { <<: *dind, container_name: dind-2 }
@@ -103,7 +112,8 @@ services:
     container_name: student-3
     environment:
       - PASSWORD=${S3_PASSWORD:?S3_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-3:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-3"  # partage le réseau du DinD (localhost commun)
     volumes: [home-3:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-3]
   dind-3: { <<: *dind, container_name: dind-3 }
@@ -113,7 +123,8 @@ services:
     container_name: student-4
     environment:
       - PASSWORD=${S4_PASSWORD:?S4_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-4:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-4"  # partage le réseau du DinD (localhost commun)
     volumes: [home-4:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-4]
   dind-4: { <<: *dind, container_name: dind-4 }
@@ -123,7 +134,8 @@ services:
     container_name: student-5
     environment:
       - PASSWORD=${S5_PASSWORD:?S5_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-5:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-5"  # partage le réseau du DinD (localhost commun)
     volumes: [home-5:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-5]
   dind-5: { <<: *dind, container_name: dind-5 }
@@ -133,7 +145,8 @@ services:
     container_name: student-6
     environment:
       - PASSWORD=${S6_PASSWORD:?S6_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-6:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-6"  # partage le réseau du DinD (localhost commun)
     volumes: [home-6:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-6]
   dind-6: { <<: *dind, container_name: dind-6 }
@@ -143,7 +156,8 @@ services:
     container_name: student-7
     environment:
       - PASSWORD=${S7_PASSWORD:?S7_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-7:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-7"  # partage le réseau du DinD (localhost commun)
     volumes: [home-7:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-7]
   dind-7: { <<: *dind, container_name: dind-7 }
@@ -153,7 +167,8 @@ services:
     container_name: student-8
     environment:
       - PASSWORD=${S8_PASSWORD:?S8_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-8:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-8"  # partage le réseau du DinD (localhost commun)
     volumes: [home-8:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-8]
   dind-8: { <<: *dind, container_name: dind-8 }
@@ -163,7 +178,8 @@ services:
     container_name: student-9
     environment:
       - PASSWORD=${S9_PASSWORD:?S9_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-9:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-9"  # partage le réseau du DinD (localhost commun)
     volumes: [home-9:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-9]
   dind-9: { <<: *dind, container_name: dind-9 }
@@ -173,7 +189,8 @@ services:
     container_name: student-10
     environment:
       - PASSWORD=${S10_PASSWORD:?S10_PASSWORD manquant}
-      - DOCKER_HOST=tcp://dind-10:2375
+      - DOCKER_HOST=tcp://localhost:2375
+    network_mode: "service:dind-10"  # partage le réseau du DinD (localhost commun)
     volumes: [home-10:/home/student]   # persiste le travail du stagiaire
     depends_on: [dind-10]
   dind-10: { <<: *dind, container_name: dind-10 }

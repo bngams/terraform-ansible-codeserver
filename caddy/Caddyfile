@@ -22,46 +22,48 @@
 	}
 }
 
-# Un site par stagiaire → son conteneur (port 8080 interne).
+# Un site par stagiaire → son code-server (port 13337).
+# Le poste partage le réseau de son DinD (network_mode) → on le joint via dind-N.
+# Conteneurs du stagiaire : https://labN.{$DOMAIN}/proxy/<port>/ (proxy code-server, protégé par mot de passe).
 lab1.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-1:8080
+	reverse_proxy dind-1:13337
 }
 lab2.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-2:8080
+	reverse_proxy dind-2:13337
 }
 lab3.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-3:8080
+	reverse_proxy dind-3:13337
 }
 lab4.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-4:8080
+	reverse_proxy dind-4:13337
 }
 lab5.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-5:8080
+	reverse_proxy dind-5:13337
 }
 lab6.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-6:8080
+	reverse_proxy dind-6:13337
 }
 lab7.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-7:8080
+	reverse_proxy dind-7:13337
 }
 lab8.{$DOMAIN} {
 	import cf_tls
-	reverse_proxy student-8:8080
+	reverse_proxy dind-8:13337
 }
 lab9.{$DOMAIN} {
-        import cf_tls
-        reverse_proxy student-9:8080
+	import cf_tls
+	reverse_proxy dind-9:13337
 }
 lab10.{$DOMAIN} {
-        import cf_tls
-        reverse_proxy student-10:8080
+	import cf_tls
+	reverse_proxy dind-10:13337
 }
 
 

@@ -112,6 +112,16 @@ Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
 - **Terminal intégré** : `terraform`, `ansible`, `aws`, `docker` déjà installés.
 - **Docker** : `DOCKER_HOST` pointe vers le DinD du poste → `docker ps`, `terraform apply`
   (provider docker) fonctionnent, **isolés**.
+- **Accéder à ses conteneurs** : le poste **partage le réseau** de son DinD
+  (`network_mode: service:dind-N`), donc un `docker run -p 9090:80 …` est joignable :
+  - dans le terminal : `curl http://localhost:9090` (comme sur un laptop) ;
+  - dans le navigateur : `https://labN.example.com/proxy/9090/` — proxy intégré à code-server,
+    **protégé par le mot de passe** du poste (rien n'est exposé publiquement). Aucune extension
+    à installer ; pour l'ouvrir *dans* VS Code : palette → **Simple Browser: Show**.
+  - ⚠️ `/proxy/<port>/` **retire** le préfixe : OK pour un site statique / une API, mais une app
+    qui génère des liens absolus (`/assets/…`) casse → utiliser `/absproxy/<port>/` et
+    configurer le *base path* de l'app.
+  - code-server écoute sur **13337** (pas 8080) pour laisser 8080 libre aux stagiaires.
 - **LocalStack** : joignable à `http://localstack:4566` (réseau interne). Provider AWS pointé
   dessus (cf. chapitre **J2-5 LocalStack** du support de formation). **Préfixer** les noms de ressources.
 

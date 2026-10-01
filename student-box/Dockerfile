@@ -45,6 +45,8 @@ RUN useradd -m -s /bin/bash student && echo "student ALL=(ALL) NOPASSWD:ALL" > /
 USER student
 WORKDIR /home/student
 
-EXPOSE 8080
+# 13337 (pas 8080) : le poste partage le réseau de son DinD, et les stagiaires publient
+# souvent leurs conteneurs sur 8080 → on évite la collision de port.
+EXPOSE 13337
 # le mot de passe vient de la variable PASSWORD (cf. compose) ; bind sur toutes les interfaces
-CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "password"]
+CMD ["code-server", "--bind-addr", "0.0.0.0:13337", "--auth", "password"]
