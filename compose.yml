@@ -154,6 +154,26 @@ services:
     depends_on: [dind-8]
   dind-8: { <<: *dind, container_name: dind-8 }
 
+  student-9:
+    <<: *student-box
+    container_name: student-9
+    environment:
+      - PASSWORD=${S9_PASSWORD:?S9_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-9:2375
+    volumes: [home-9:/home/student]   # persiste le travail du stagiaire
+    depends_on: [dind-9]
+  dind-9: { <<: *dind, container_name: dind-9 }
+
+  student-10:
+    <<: *student-box
+    container_name: student-10
+    environment:
+      - PASSWORD=${S10_PASSWORD:?S10_PASSWORD manquant}
+      - DOCKER_HOST=tcp://dind-10:2375
+    volumes: [home-10:/home/student]   # persiste le travail du stagiaire
+    depends_on: [dind-10]
+  dind-10: { <<: *dind, container_name: dind-10 }
+
 networks:
   lab:
     name: lab
@@ -169,3 +189,5 @@ volumes:
   home-6:
   home-7:
   home-8:
+  home-9:
+  home-10:

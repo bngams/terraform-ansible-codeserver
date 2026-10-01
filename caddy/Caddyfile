@@ -55,6 +55,15 @@ lab8.{$DOMAIN} {
 	import cf_tls
 	reverse_proxy student-8:8080
 }
+lab9.{$DOMAIN} {
+        import cf_tls
+        reverse_proxy student-9:8080
+}
+lab10.{$DOMAIN} {
+        import cf_tls
+        reverse_proxy student-10:8080
+}
+
 
 # Console LocalStack partagée
 labls.{$DOMAIN} {
