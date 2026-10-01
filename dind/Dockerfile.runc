@@ -1,0 +1,24 @@
+# DinD + outils pour le workshop runc (Docker low-level).
+# Base = la même image DinD que le lab (docker:27-dind, Alpine), + runc & crane.
+FROM docker:27-dind
+
+ARG CRANE_VERSION=0.20.2
+
+# Outils en paquets stables : runc (runtime OCI), jq (config.json), iproute2 (veth/netns),
+# shadow-uidmap (rootless/uidmap), bash/curl/ca-certificates.
+RUN apk add --no-cache \
+      runc \
+      jq \
+      curl \
+      tar \
+      iproute2 \
+      shadow-uidmap \
+      ca-certificates \
+      bash
+
+# crane : pas dans le repo stable d'Alpine → on télécharge le binaire (release GitHub).
+RUN ARCH=$(uname -m); case "$ARCH" in x86_64) GARCH=x86_64;; aarch64) GARCH=arm64;; *) GARCH=$ARCH;; esac; \
+    curl -fsSL "https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_${GARCH}.tar.gz" \
+      | tar -xz -C /usr/local/bin crane
+
+# (le démon Docker du DinD reste l'entrypoint d'origine de docker:dind)
