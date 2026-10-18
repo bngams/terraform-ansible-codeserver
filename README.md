@@ -102,7 +102,7 @@ docker compose up -d        # build des postes + démarrage (1er run un peu long
 docker compose ps
 ```
 
-Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
+Accès stagiaires : `https://lab1.example.com` … `https://lab10.example.com`
 (mot de passe = `S<N>_PASSWORD`). Console LocalStack : `https://labls.example.com`.
 
 ---
@@ -134,6 +134,46 @@ Accès stagiaires : `https://lab1.example.com` … `https://lab8.example.com`
   - code-server écoute sur **13337** (pas 8080) pour laisser 8080 libre aux stagiaires.
 - **LocalStack** : joignable à `http://localstack:4566` (réseau interne). Provider AWS pointé
   dessus (cf. chapitre **J2-5 LocalStack** du support de formation). **Préfixer** les noms de ressources.
+
+---
+
+## Option : l'extension byte_layers dans les postes
+
+Les cours [byte_layers](https://open-vsx.org/extension/byte-layers/byte-layers) (étapes
+guidées, `verify` automatiques) peuvent tourner **dans** les postes. Dans le `.env` :
+
+```bash
+BYTE_LAYERS_EXTENSION=0.2.0   # une version exacte (recommandé pour une session)
+# BYTE_LAYERS_EXTENSION=latest  # la dernière version publiée
+# BYTE_LAYERS_EXTENSION=        # vide ou off : pas d'extension
+```
+
+puis `docker compose up -d`. Chaque poste l'installe depuis **Open VSX** à son démarrage
+(`student-box/start.sh`) : changer la valeur et relancer suffit, sans rebuild, et le home
+des stagiaires (un volume) est mis à jour. Vide ou `off` la retire. Si Open VSX est
+injoignable ou la version inconnue, le poste démarre quand même, avec ce qui était déjà installé.
+
+**Lien à donner** : `https://labN.example.com/?folder=/home/student/byte_layers` (dossier
+créé au démarrage). ⚠️ Pas le home (`/home/student`) : un workspace qui contient le dossier
+des extensions les **désactive** (« Enable (Workspace) » dans la vue Extensions).
+
+Côté stagiaire :
+1. icône **byte_layers** dans la barre d'activité ; palette (F1) → **byte_layers: Open a
+   Course from a URL** → dépôt git du cours (ex. `https://github.com/byte-layers/course-demo`)
+   puis la version (ex. `v1`) → **Open**. Le cours est cloné dans `~/byte_layers/<cours>` et
+   s'ouvre dans un **nouvel onglet** du navigateur ;
+2. « Do you trust the authors… ? » → **Yes, I trust the authors** (cocher « Trust … parent
+   folder 'byte_layers' » évite la question pour les cours suivants). Sans confiance, le
+   cours se lit mais ses commandes et `verify` ne s'exécutent pas ;
+3. astuce : glisser l'icône byte_layers dans la barre latérale **droite** garde les fichiers
+   à gauche.
+
+Vérifié en local (code-server 4.96.4, extension 0.2.0, Chromium) : installation par version,
+`latest`, `off`, version inconnue, cours `course-demo@v1` cloné, ouvert et affiché.
+
+> ⚠️ **Les étapes d'un cours exécutent des commandes dans le poste**, dans un terminal
+> VS Code (c'est le principe). Ici, elles tournent dans le conteneur du stagiaire et son
+> DinD, pas sur sa machine ; n'ouvrir que des cours de sources de confiance.
 
 ---
 
