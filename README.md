@@ -143,7 +143,7 @@ Les cours [byte_layers](https://open-vsx.org/extension/byte-layers/byte-layers) 
 guidées, `verify` automatiques) peuvent tourner **dans** les postes. Dans le `.env` :
 
 ```bash
-BYTE_LAYERS_EXTENSION=0.2.0   # une version exacte (recommandé pour une session)
+BYTE_LAYERS_EXTENSION=0.11.0  # une version exacte (recommandé pour une session)
 # BYTE_LAYERS_EXTENSION=latest  # la dernière version publiée
 # BYTE_LAYERS_EXTENSION=        # vide ou off : pas d'extension
 ```
